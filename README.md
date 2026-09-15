@@ -2,7 +2,7 @@
 
 **Open-source business-flow cost attribution for cloud and AI.**
 
-> Clone it. Connect your billing and telemetry. Define your business unit. CostGraph discovers how your product runs and tells you what every business outcome truly costs — including its AI cost per successful outcome.
+> Built for the AI Builders Hackathon. Point it at your billing and telemetry, define your business unit, and CostGraph maps how your product actually runs — then tells you what one business outcome costs, including its AI cost per successful outcome.
 
 CostGraph answers the question cloud bills dodge: **what does one business outcome actually cost?** — one completed order, one API request, one successful AI decision — across shared infrastructure, asynchronous messaging, ephemeral jobs, cross-project downstream services, and AI/LLM workloads.
 

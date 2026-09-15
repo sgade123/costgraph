@@ -111,9 +111,9 @@ export default function App() {
         <main className="p-5 space-y-4" style={{ minWidth: 0 }}>
           {/* one-liner */}
           <div className="text-[13px] leading-relaxed px-1" style={{ color: 'var(--ink-dim)' }}>
-            Your cloud bill says what a <span style={{ color: 'var(--ink)' }}>service</span> costs.
-            CostGraph says what one <span style={{ color: 'var(--acc)' }}>order</span> costs — across shared infra,
-            cross-project services, and AI — with the human setting how cost is split.
+            We built CostGraph to answer what our cloud bills never could: the true cost of one
+            <span style={{ color: 'var(--acc)' }}> business outcome</span> — across shared infrastructure,
+            cross-project services, and AI, with the human setting how cost is split.
           </div>
 
           {/* HERO */}

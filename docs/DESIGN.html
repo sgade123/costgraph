@@ -136,7 +136,7 @@
   <ol>
     <li><b>Shared infrastructure.</b> A GKE cluster, a Pub/Sub topic, or a Dataflow job serves several products at once. The bill is one number per service; splitting it per product is a judgment call, not a lookup.</li>
     <li><b>Cross-project / cross-team calls.</b> A product's flow calls global services (fraud-check, payments) owned by other teams, in other projects. Their resource labels are common to every caller, so label-based attribution fails at the boundary.</li>
-    <li><b>AI cost is outcome-opaque.</b> LLM spend is metered per token and per model, with retries, tool calls, and caching. Nobody can say what one <em>successful</em> AI decision costs, or what happens to that cost if quality must stay above a threshold.</li>
+    <li><b>AI cost is outcome-opaque.</b> LLM spend is metered per token and per model, with retries, tool calls, and caching. Cost per <em>successful</em> AI decision — and what happens to it when quality must stay above a threshold — is rarely surfaced by existing cost tools.</li>
     <li><b>No business denominator.</b> Cost data lives in billing systems; the count of business outcomes lives in application systems. They are never joined, so "cost per order" cannot be computed from either alone.</li>
   </ol>
   <div class="callout warn"><b>Consequence:</b> engineering leaders and finance can see <em>total</em> spend but cannot answer "what does one order cost to run, and why did it go up?" — the question that actually drives pricing, capacity, and optimization decisions.</div>
