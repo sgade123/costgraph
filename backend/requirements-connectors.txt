@@ -1,0 +1,9 @@
+# Optional dependencies for specific live connectors.
+# Install only if you use that connector:
+#   pip install -r requirements-connectors.txt
+#
+# gcp_cost (BigQuery billing export):
+google-cloud-bigquery==3.25.0
+#
+# (httpx, used by openai_usage and datadog_telemetry, is already in core.)
+# Future connectors (AWS CUR, Azure Cost Management) will add their SDKs here.

@@ -1,0 +1,14 @@
+# CostGraph core — everything needed to run the app, the engines, the agent
+# (deterministic mode), and the file / CSV / OpenAI / Datadog connectors.
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pyyaml==6.0.2
+httpx==0.27.2
+pytest==8.3.3
+
+# Notes:
+# - The OpenAI agent path activates when OPENAI_API_KEY is set; without it the
+#   agent uses deterministic intent routing (still fully functional).
+# - The GCP BigQuery connector (gcp_cost) needs an extra package — see
+#   requirements-connectors.txt. The GCP CSV connector (gcp_csv_cost) does not.

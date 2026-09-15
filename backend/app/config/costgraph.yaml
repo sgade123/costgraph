@@ -1,0 +1,42 @@
+# CostGraph configuration.
+#
+# To run CostGraph on YOUR data, you edit THIS file — not the engines.
+# Point each plane at a connector and its source. The bundled demo uses the
+# file connectors reading the App1 sample dataset in backend/app/data/.
+#
+# To use your own data: export your billing / telemetry / business metrics /
+# AI usage to files in these formats (see docs/CONNECTORS.md) and update the
+# paths below, or implement a provider connector (see connectors/base.py).
+
+product:
+  id: app1
+  name: "Order Processing"
+  # The business unit this product's cost is divided by. Configurable —
+  # completed_order | transaction | api_request | successful_ai_decision | ...
+  business_unit: completed_order
+
+# Allocation policy governs how SHARED COMPUTE is split. Options:
+#   cpu_request | cpu_actual | memory | pod_count
+# Throughput / dedicated / cross-project resources use their own fixed basis.
+allocation:
+  default_policy: cpu_request
+
+# Guardrails the optimizer and agent must respect.
+guardrails:
+  protect_prod: true
+  require_approval: true
+  min_ai_success_rate: 0.95   # optimizer may not drop AI success below this
+
+planes:
+  cost:
+    connector: file_cost
+    source: app/data/cost_records.json
+  telemetry:
+    connector: file_telemetry
+    source: app/data/telemetry.json
+  business:
+    connector: file_business
+    source: app/data/business_metrics.csv
+  ai_usage:
+    connector: file_ai_usage
+    source: app/data/ai_usage.json

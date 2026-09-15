@@ -1,0 +1,3 @@
+timestamp,product_id,unit_type,unit_count,customer_id,tenant_id
+2026-08-01T00:00:00Z,app1,completed_order,214000,,
+2026-07-01T00:00:00Z,app1,completed_order,198000,,

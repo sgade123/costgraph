@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CostGraph — Design &amp; Solution Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a2230; --ink-soft:#42506a; --ink-faint:#7a89a3; --line:#dde3ec;
+    --bg:#fbfcfe; --panel:#ffffff; --panel-2:#f4f7fb;
+    --cost:#e8833a; --tel:#3b82f6; --biz:#22a06b; --ai:#8b5cf6;
+    --accent:#0f5fdc; --code-bg:#0f1626; --code-ink:#d7e0f2;
+    --warn:#c26b12; --good:#1c8a5a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+
+  /* header */
+  header.masthead{border-bottom:2px solid var(--ink);background:var(--panel)}
+  .masthead .wrap{padding:38px 28px 30px}
+  .doc-kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+  h1{font-family:Newsreader,serif;font-weight:600;font-size:44px;line-height:1.05;margin:0 0 12px;letter-spacing:-.01em}
+  .sub{font-family:Newsreader,serif;font-size:20px;color:var(--ink-soft);font-weight:400;max-width:70ch;margin:0}
+  .meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;font-size:13px;color:var(--ink-faint)}
+  .meta b{color:var(--ink-soft);font-weight:600}
+
+  /* toc */
+  nav.toc{background:var(--panel-2);border-bottom:1px solid var(--line)}
+  nav.toc .wrap{padding:16px 28px;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;font-weight:500}
+  nav.toc a:hover{color:var(--accent)}
+
+  section{padding:44px 0;border-bottom:1px solid var(--line)}
+  h2{font-family:Newsreader,serif;font-size:30px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+  h2 .n{font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--accent);margin-right:14px;font-weight:500}
+  h3{font-size:17px;font-weight:700;margin:30px 0 8px;color:var(--ink)}
+  h4{font-size:14px;font-weight:700;margin:20px 0 6px;color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;letter-spacing:.02em}
+  p{margin:10px 0;max-width:74ch}
+  .lead{font-size:17px;color:var(--ink-soft)}
+  ul,ol{max-width:74ch;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--panel-2);
+    padding:1px 6px;border-radius:4px;color:#234}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:18px 20px;border-radius:8px;
+    overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.6;margin:14px 0}
+  pre .c{color:#6b7a99}     /* comment */
+  pre .k{color:#7dd3fc}     /* keyword */
+  pre .s{color:#a7f3d0}     /* string */
+  figure{margin:22px 0}
+  figcaption{font-size:12.5px;color:var(--ink-faint);margin-top:8px;font-family:'IBM Plex Mono',monospace}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:14px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}h1{font-size:34px}}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:600;background:var(--panel-2)}
+  td code{background:transparent;padding:0}
+  .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 8px;
+    border-radius:20px;font-weight:600}
+  .pill.cost{background:#fdeede;color:#a5541a}
+  .pill.tel{background:#e5efff;color:#1e5cc0}
+  .pill.biz{background:#e0f5ec;color:#12764c}
+  .pill.ai{background:#efe8fe;color:#6d3fce}
+  .callout{border-left:3px solid var(--accent);background:var(--panel-2);padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px}
+  .callout.warn{border-left-color:var(--warn)}
+  .status{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 7px;border-radius:4px;font-weight:600}
+  .status.done{background:#e0f5ec;color:#12764c}
+  .status.next{background:#fdeede;color:#a5541a}
+  svg{max-width:100%;height:auto;display:block}
+  .diagram{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  footer{padding:40px 0 70px;color:var(--ink-faint);font-size:13px}
+  .lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;fill:var(--ink-faint)}
+  .nodetxt{font-family:Inter,sans-serif;font-size:12px;font-weight:600;fill:var(--ink)}
+  .nodesub{font-family:'IBM Plex Mono',monospace;font-size:9.5px;fill:var(--ink-faint)}
+  .flowtxt{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="doc-kicker">Design &amp; Solution Specification · v0.1</div>
+    <h1>CostGraph&nbsp;AI</h1>
+    <p class="sub">Business-flow cost attribution for cloud and AI — what one business outcome actually costs, across shared infrastructure, cross-project services, and AI workloads.</p>
+    <div class="meta">
+      <span><b>Author</b> Swetha</span>
+      <span><b>Status</b> Foundation complete · engines in progress</span>
+      <span><b>Stack</b> FastAPI · React · connector framework</span>
+      <span><b>License</b> Apache-2.0</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#summary">1 Summary</a>
+    <a href="#problem">2 Problem</a>
+    <a href="#solution">3 Solution</a>
+    <a href="#architecture">4 Architecture</a>
+    <a href="#dataflow">5 Data Flow</a>
+    <a href="#planes">6 Data Planes</a>
+    <a href="#attribution">7 Attribution</a>
+    <a href="#functional">8 Functional Spec</a>
+    <a href="#technical">9 Technical Spec</a>
+    <a href="#api">10 API</a>
+    <a href="#adopt">11 Adoption</a>
+    <a href="#roadmap">12 Roadmap</a>
+  </div>
+</nav>
+
+<!-- 1 SUMMARY -->
+<section id="summary"><div class="wrap">
+  <h2><span class="n">01</span>Executive Summary</h2>
+  <p class="lead">A cloud bill tells you what a <em>service</em> costs. It never tells you what one <em>business outcome</em> costs — one completed order, one API request, one successful AI decision — because the infrastructure producing that outcome is shared across products, spread across projects and teams, and increasingly includes AI/LLM spend measured in tokens, not dollars-per-order.</p>
+  <p>CostGraph is an open-source platform that ingests cost, telemetry, business, and AI-usage data through a pluggable connector layer, discovers how a product actually runs as a <b>Business Value Graph</b>, and computes the fully-loaded cost of a single business outcome — including its <b>AI cost per successful outcome</b>. It then explains why that cost changed and simulates optimizations that respect service-level and AI-quality guardrails.</p>
+  <div class="card">
+    <b>The narrative in three verbs:</b>
+    <p style="margin:8px 0 0"><b>KNOW</b> what one outcome costs → <b>EXPLAIN</b> why it changed and how each cost was attributed → <b>OPTIMIZE</b> toward a target unit cost without breaking quality or reliability constraints.</p>
+  </div>
+</div></section>
+
+<!-- 2 PROBLEM -->
+<section id="problem"><div class="wrap">
+  <h2><span class="n">02</span>Problem Statement</h2>
+  <p>Unit economics in modern cloud + AI systems is unsolved for four structural reasons:</p>
+  <ol>
+    <li><b>Shared infrastructure.</b> A GKE cluster, a Pub/Sub topic, or a Dataflow job serves several products at once. The bill is one number per service; splitting it per product is a judgment call, not a lookup.</li>
+    <li><b>Cross-project / cross-team calls.</b> A product's flow calls global services (fraud-check, payments) owned by other teams, in other projects. Their resource labels are common to every caller, so label-based attribution fails at the boundary.</li>
+    <li><b>AI cost is outcome-opaque.</b> LLM spend is metered per token and per model, with retries, tool calls, and caching. Nobody can say what one <em>successful</em> AI decision costs, or what happens to that cost if quality must stay above a threshold.</li>
+    <li><b>No business denominator.</b> Cost data lives in billing systems; the count of business outcomes lives in application systems. They are never joined, so "cost per order" cannot be computed from either alone.</li>
+  </ol>
+  <div class="callout warn"><b>Consequence:</b> engineering leaders and finance can see <em>total</em> spend but cannot answer "what does one order cost to run, and why did it go up?" — the question that actually drives pricing, capacity, and optimization decisions.</div>
+</div></section>
+
+<!-- 3 SOLUTION -->
+<section id="solution"><div class="wrap">
+  <h2><span class="n">03</span>Solution Overview</h2>
+  <p>CostGraph normalizes every input into four canonical <b>data planes</b>, then runs a deterministic engine stack over them:</p>
+  <div class="grid2">
+    <div class="card"><span class="pill cost">COST</span><p style="margin:8px 0 0">What each resource cost (billing exports, AI invoices), normalized to FOCUS-style line items.</p></div>
+    <div class="card"><span class="pill tel">TELEMETRY</span><p style="margin:8px 0 0">Who consumed how much — the evidence used to split shared cost, carrying identity keys (labels, OTel baggage).</p></div>
+    <div class="card"><span class="pill biz">BUSINESS</span><p style="margin:8px 0 0">How many outcomes were produced — the configurable denominator (orders, requests, AI decisions).</p></div>
+    <div class="card"><span class="pill ai">AI USAGE</span><p style="margin:8px 0 0">Per-invocation LLM events with tokens, tool calls, retries, quality and success — enabling cost per successful outcome.</p></div>
+  </div>
+  <p>Above the planes sit five deterministic engines — <b>attribution</b>, <b>unit economics</b>, <b>AI tokenomics</b>, <b>root-cause analysis</b>, and <b>optimization</b> — and an <b>AI agent</b> that turns natural-language questions into engine calls and plain-language answers. The financial math is deterministic and auditable; the LLM only interprets and explains.</p>
+</div></section>
+
+<!-- 4 ARCHITECTURE -->
+<section id="architecture"><div class="wrap">
+  <h2><span class="n">04</span>System Architecture</h2>
+  <p>A layered architecture: provider data enters through connectors, is normalized into the four planes, loaded by a repository, consumed by the engine stack, exposed via a REST API, and presented in a dashboard and to an agent.</p>
+  <figure><div class="diagram">
+    <svg viewBox="0 0 900 470" role="img" aria-label="System architecture layers">
+      <!-- layer bands -->
+      <g>
+        <rect x="20" y="20" width="860" height="66" rx="8" fill="#fdf6ee" stroke="#f0d9bf"/>
+        <text x="34" y="44" class="lbl">LAYER 1 · SOURCES</text>
+        <g class="nodetxt" text-anchor="middle">
+          <rect x="150" y="50" width="120" height="26" rx="5" fill="#fff" stroke="#e2c9a8"/><text x="210" y="67">GCP / AWS billing</text>
+          <rect x="290" y="50" width="120" height="26" rx="5" fill="#fff" stroke="#e2c9a8"/><text x="350" y="67">Cloud Monitoring</text>
+          <rect x="430" y="50" width="110" height="26" rx="5" fill="#fff" stroke="#e2c9a8"/><text x="485" y="67">Orders DB</text>
+          <rect x="560" y="50" width="150" height="26" rx="5" fill="#fff" stroke="#e2c9a8"/><text x="635" y="67">OpenAI / LLM usage</text>
+        </g>
+      </g>
+      <!-- connectors -->
+      <rect x="20" y="100" width="860" height="52" rx="8" fill="#eef4ff" stroke="#c7dbfb"/>
+      <text x="34" y="122" class="lbl">LAYER 2 · CONNECTORS  (you implement fetch() → normalized records)</text>
+      <g class="nodesub" text-anchor="middle">
+        <rect x="150" y="126" width="120" height="20" rx="4" fill="#fff" stroke="#bcd3f7"/><text x="210" y="139">CostConnector</text>
+        <rect x="290" y="126" width="120" height="20" rx="4" fill="#fff" stroke="#bcd3f7"/><text x="350" y="139">TelemetryConnector</text>
+        <rect x="430" y="126" width="110" height="20" rx="4" fill="#fff" stroke="#bcd3f7"/><text x="485" y="139">BusinessConnector</text>
+        <rect x="560" y="126" width="150" height="20" rx="4" fill="#fff" stroke="#bcd3f7"/><text x="635" y="139">AIUsageConnector</text>
+      </g>
+      <!-- planes -->
+      <rect x="20" y="166" width="860" height="52" rx="8" fill="#f6f8fb" stroke="var(--line)"/>
+      <text x="34" y="188" class="lbl">LAYER 3 · NORMALIZED DATA PLANES  (canonical schema)</text>
+      <g text-anchor="middle" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600">
+        <rect x="150" y="192" width="120" height="20" rx="4" fill="#fdeede"/><text x="210" y="205" fill="#a5541a">CostRecord</text>
+        <rect x="290" y="192" width="120" height="20" rx="4" fill="#e5efff"/><text x="350" y="205" fill="#1e5cc0">TelemetryRecord</text>
+        <rect x="430" y="192" width="110" height="20" rx="4" fill="#e0f5ec"/><text x="485" y="205" fill="#12764c">BusinessMetric</text>
+        <rect x="560" y="192" width="150" height="20" rx="4" fill="#efe8fe"/><text x="635" y="205" fill="#6d3fce">AIUsageEvent</text>
+      </g>
+      <!-- repository -->
+      <rect x="300" y="232" width="300" height="30" rx="6" fill="#0f1626"/>
+      <text x="450" y="251" text-anchor="middle" style="fill:#d7e0f2;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">Repository (loads all planes)</text>
+      <!-- engines -->
+      <rect x="20" y="278" width="860" height="86" rx="8" fill="#f6f8fb" stroke="var(--line)"/>
+      <text x="34" y="300" class="lbl">LAYER 4 · DETERMINISTIC ENGINES</text>
+      <g class="nodetxt" text-anchor="middle" style="font-size:11.5px">
+        <rect x="60" y="312" width="140" height="40" rx="6" fill="#fff" stroke="var(--line)"/><text x="130" y="330">Attribution</text><text x="130" y="344" class="nodesub">graph + shares</text>
+        <rect x="215" y="312" width="140" height="40" rx="6" fill="#fff" stroke="var(--line)"/><text x="285" y="330">Unit Economics</text><text x="285" y="344" class="nodesub">cost / outcome</text>
+        <rect x="370" y="312" width="140" height="40" rx="6" fill="#fff" stroke="#d9ccf7"/><text x="440" y="330">AI Tokenomics</text><text x="440" y="344" class="nodesub">cost / success</text>
+        <rect x="525" y="312" width="140" height="40" rx="6" fill="#fff" stroke="var(--line)"/><text x="595" y="330">RCA</text><text x="595" y="344" class="nodesub">why changed</text>
+        <rect x="680" y="312" width="150" height="40" rx="6" fill="#fff" stroke="var(--line)"/><text x="755" y="330">Optimization</text><text x="755" y="344" class="nodesub">constrained sim</text>
+      </g>
+      <!-- api + agent -->
+      <rect x="20" y="378" width="500" height="52" rx="8" fill="#eef4ff" stroke="#c7dbfb"/>
+      <text x="34" y="400" class="lbl">LAYER 5 · REST API (FastAPI)</text>
+      <text x="34" y="418" class="flowtxt">/api/economics · /api/graph · /api/tokenomics · /api/optimize · /api/agent/query</text>
+      <rect x="540" y="378" width="340" height="52" rx="8" fill="#efe8fe" stroke="#d9ccf7"/>
+      <text x="554" y="400" class="lbl">LAYER 6 · PRESENTATION</text>
+      <text x="554" y="418" class="flowtxt">React dashboard · AI agent (NL → engines → explanation)</text>
+      <!-- flow arrows -->
+      <g stroke="#9fb3d4" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+        <line x1="450" y1="86" x2="450" y2="100"/>
+        <line x1="450" y1="152" x2="450" y2="166"/>
+        <line x1="450" y1="218" x2="450" y2="232"/>
+        <line x1="450" y1="262" x2="450" y2="278"/>
+        <line x1="450" y1="364" x2="450" y2="378"/>
+      </g>
+      <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 z" fill="#9fb3d4"/></marker></defs>
+    </svg>
+  </div><figcaption>Fig 1 — Six-layer architecture. Data flows top→bottom; each layer depends only on the normalized contract below it.</figcaption></figure>
+</div></section>
+
+<!-- 5 DATA FLOW -->
+<section id="dataflow"><div class="wrap">
+  <h2><span class="n">05</span>Data Flow</h2>
+  <p>The end-to-end path for a single question — <em>"what does one app1 order cost, and why did it rise?"</em> — traverses the whole stack deterministically:</p>
+  <figure><div class="diagram">
+    <svg viewBox="0 0 900 340" role="img" aria-label="Request data flow">
+      <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 z" fill="#0f5fdc"/></marker></defs>
+      <!-- steps -->
+      <g text-anchor="middle">
+        <rect x="30" y="40" width="150" height="54" rx="8" fill="#efe8fe" stroke="#d9ccf7"/>
+        <text x="105" y="62" class="nodetxt">1 · User / Agent</text>
+        <text x="105" y="80" class="nodesub">NL question</text>
+
+        <rect x="30" y="150" width="150" height="54" rx="8" fill="#eef4ff" stroke="#c7dbfb"/>
+        <text x="105" y="172" class="nodetxt">2 · Agent service</text>
+        <text x="105" y="190" class="nodesub">intent → engine plan</text>
+
+        <rect x="375" y="150" width="150" height="54" rx="8" fill="#0f1626"/>
+        <text x="450" y="172" class="nodetxt" style="fill:#d7e0f2">3 · Repository</text>
+        <text x="450" y="190" class="nodesub" style="fill:#8fa2c4">loads 4 planes</text>
+
+        <rect x="720" y="40" width="150" height="54" rx="8" fill="#fdf6ee" stroke="#f0d9bf"/>
+        <text x="795" y="62" class="nodetxt">4a · Attribution</text>
+        <text x="795" y="80" class="nodesub">value graph + shares</text>
+
+        <rect x="720" y="115" width="150" height="48" rx="8" fill="#fff" stroke="var(--line)"/>
+        <text x="795" y="135" class="nodetxt">4b · Economics</text>
+        <text x="795" y="151" class="nodesub">cost ÷ outcomes</text>
+
+        <rect x="720" y="180" width="150" height="48" rx="8" fill="#fff" stroke="#d9ccf7"/>
+        <text x="795" y="200" class="nodetxt">4c · Tokenomics</text>
+        <text x="795" y="216" class="nodesub">AI cost / success</text>
+
+        <rect x="720" y="245" width="150" height="48" rx="8" fill="#fff" stroke="var(--line)"/>
+        <text x="795" y="265" class="nodetxt">4d · RCA</text>
+        <text x="795" y="281" class="nodesub">period delta driver</text>
+
+        <rect x="375" y="255" width="150" height="54" rx="8" fill="#eef4ff" stroke="#c7dbfb"/>
+        <text x="450" y="277" class="nodetxt">5 · Compose answer</text>
+        <text x="450" y="295" class="nodesub">numbers + explanation</text>
+
+        <rect x="30" y="255" width="150" height="54" rx="8" fill="#efe8fe" stroke="#d9ccf7"/>
+        <text x="105" y="277" class="nodetxt">6 · Response</text>
+        <text x="105" y="295" class="nodesub">dashboard / chat</text>
+      </g>
+      <g stroke="#0f5fdc" stroke-width="1.6" fill="none" marker-end="url(#ar2)">
+        <line x1="105" y1="94" x2="105" y2="150"/>
+        <line x1="180" y1="177" x2="375" y2="177"/>
+        <line x1="525" y1="168" x2="720" y2="90"/>
+        <line x1="525" y1="177" x2="720" y2="139"/>
+        <line x1="525" y1="186" x2="720" y2="204"/>
+        <line x1="525" y1="190" x2="720" y2="269"/>
+        <line x1="720" y1="269" x2="527" y2="278" stroke="#9fb3d4"/>
+        <line x1="375" y1="282" x2="180" y2="282"/>
+      </g>
+      <text x="450" y="130" class="flowtxt" text-anchor="middle">engines read only normalized planes — never provider formats</text>
+    </svg>
+  </div><figcaption>Fig 2 — Request data flow. Deterministic engines (4a–4d) produce the numbers; the agent (2, 5) only plans and explains.</figcaption></figure>
+</div></section>
+
+<!-- 6 PLANES -->
+<section id="planes"><div class="wrap">
+  <h2><span class="n">06</span>The Four Data Planes</h2>
+  <p>Every connector normalizes provider data into these record types. Engines depend only on these, which is what decouples CostGraph from any specific cloud or vendor.</p>
+
+  <h3><span class="pill cost">COST</span> &nbsp;CostRecord</h3>
+  <table><tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>resource_id</code></td><td>str</td><td>Stable id cost is billed against — joins to telemetry</td></tr>
+    <tr><td><code>service</code>, <code>sku</code></td><td>str</td><td>What was billed (GKE, Pub/Sub, OpenAI…)</td></tr>
+    <tr><td><code>effective_cost</code></td><td>float</td><td>The money (amortized/effective)</td></tr>
+    <tr><td><code>labels</code>, <code>tags</code></td><td>map</td><td>Identity metadata for label-based attribution</td></tr>
+  </table>
+
+  <h3><span class="pill tel">TELEMETRY</span> &nbsp;TelemetryRecord</h3>
+  <table><tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>resource_id</code></td><td>str</td><td>Joins to the cost record being split</td></tr>
+    <tr><td><code>cpu_seconds</code>, <code>request_count</code>, <code>message_count</code>…</td><td>float</td><td>Consumption measures — the evidence for splitting shared cost</td></tr>
+    <tr><td><code>trace_id</code>, <code>span_id</code></td><td>str</td><td>Trace context for cross-service/project attribution</td></tr>
+    <tr><td><code>attributes</code></td><td>map</td><td>Identity keys the split groups by — e.g. <code>{product: app1}</code> from OTel baggage, <code>{app: app1}</code> from a k8s label</td></tr>
+  </table>
+
+  <h3><span class="pill biz">BUSINESS</span> &nbsp;BusinessMetric</h3>
+  <table><tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>product_id</code></td><td>str</td><td>Which product produced the outcomes</td></tr>
+    <tr><td><code>unit_type</code></td><td>str</td><td>Configurable denominator — <code>completed_order</code>, <code>api_request</code>, <code>successful_ai_decision</code>…</td></tr>
+    <tr><td><code>unit_count</code></td><td>float</td><td>How many outcomes in the period</td></tr>
+  </table>
+
+  <h3><span class="pill ai">AI USAGE</span> &nbsp;AIUsageEvent</h3>
+  <table><tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>model</code>, <code>agent_name</code></td><td>str</td><td>Which model/agent did the work</td></tr>
+    <tr><td><code>input/output/cached/reasoning_tokens</code></td><td>int</td><td>Token accounting incl. cache + reasoning</td></tr>
+    <tr><td><code>tool_calls</code>, <code>model_calls</code>, <code>retry_count</code></td><td>int</td><td>Call-shape overhead — the hidden multipliers of AI cost</td></tr>
+    <tr><td><code>quality_score</code>, <code>success</code></td><td>float/bool</td><td>Outcome quality — enables <b>cost per successful outcome</b></td></tr>
+    <tr><td><code>business_unit_id</code>, <code>transaction_id</code></td><td>str</td><td>Links AI spend to the business outcome it served</td></tr>
+  </table>
+</div></section>
+
+<!-- 7 ATTRIBUTION -->
+<section id="attribution"><div class="wrap">
+  <h2><span class="n">07</span>Attribution Model</h2>
+  <p>The core intellectual work: splitting shared and cross-project cost to a product. Every attributed edge records <em>which method</em> produced its share and <em>what evidence</em> justifies it — so every number is auditable.</p>
+  <table>
+    <tr><th>Method</th><th>When it applies</th><th>Split key</th></tr>
+    <tr><td><code>dedicated</code></td><td>Sole-owner resource</td><td>100%</td></tr>
+    <tr><td><code>label</code></td><td>Shared resource, same project, tagged per tenant</td><td>Resource label / namespace</td></tr>
+    <tr><td><code>consumption</code></td><td>Shared compute (GKE)</td><td>A telemetry measure — CPU request vs actual, memory, pods (the allocation <em>policy</em>)</td></tr>
+    <tr><td><code>message_attribute</code></td><td>Shared Pub/Sub topic</td><td>Per-message <code>source_app</code> attribute</td></tr>
+    <tr><td><code>otel_baggage</code></td><td><b>Cross-project</b> global services</td><td>Propagated <code>product</code> baggage — the label is common to all callers, so identity must travel with the request</td></tr>
+    <tr><td><code>call_share</code></td><td>Downstream service compute</td><td>Product's share of calls, keyed by baggage</td></tr>
+  </table>
+  <div class="callout"><b>The hard case — cross-project attribution.</b> When app1 calls a global <code>fraud-check</code> service in another team's project, that service's pods are labeled <code>app: fraud-check</code> — common to every caller — so a resource label cannot say who to bill. CostGraph attributes it by <b>OpenTelemetry baggage</b>: app1 stamps each request with <code>product=app1</code>, which propagates across the project boundary; the service counts CPU-seconds keyed by that baggage. app1's share of that work becomes its share of the service's cost. The allocation policy (request vs actual CPU) still governs how much of the service's compute is allocatable; the baggage governs app1's slice of it.</div>
+</div></section>
+
+<!-- 8 FUNCTIONAL -->
+<section id="functional"><div class="wrap">
+  <h2><span class="n">08</span>Functional Specification</h2>
+  <table>
+    <tr><th>ID</th><th>Capability</th><th>Description</th><th>Status</th></tr>
+    <tr><td>F1</td><td>Ingest via connectors</td><td>Load cost, telemetry, business, AI-usage through pluggable connectors declared in config</td><td><span class="status done">built</span></td></tr>
+    <tr><td>F2</td><td>Discover value graph</td><td>Build the Business Value Graph: nodes (product, services, resources, AI agents) and attributed edges with confidence + evidence</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F3</td><td>Compute unit economics</td><td>Fully-loaded cost per business outcome under a chosen allocation policy, incl. cross-project + AI cost</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F4</td><td>AI tokenomics</td><td>Cost per successful AI outcome; retry, tool-call, cache overhead; model-routing economics</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F5</td><td>Change allocation policy</td><td>Switch CPU-request/actual/memory/pods; every downstream number recomputes</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F6</td><td>Root-cause analysis</td><td>Explain period-over-period unit-cost change and name the primary driver</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F7</td><td>Constrained optimization</td><td>Simulate reaching a target unit cost without dropping AI success below a threshold or breaching prod guardrails</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F8</td><td>Guardrail governance</td><td>Protect prod-tagged resources; require human approval for changes</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F9</td><td>AI agent (NL query)</td><td>Natural-language question → deterministic engine calls → plain-language answer with numbers</td><td><span class="status next">next</span></td></tr>
+    <tr><td>F10</td><td>Dashboard</td><td>Unit cost, value graph, tokenomics panel, RCA, optimization simulator</td><td><span class="status next">next</span></td></tr>
+  </table>
+</div></section>
+
+<!-- 9 TECHNICAL -->
+<section id="technical"><div class="wrap">
+  <h2><span class="n">09</span>Technical Specification</h2>
+  <div class="grid2">
+    <div>
+      <h4>BACKEND</h4>
+      <ul>
+        <li>Python 3.12, <b>FastAPI</b> + Uvicorn</li>
+        <li><b>Pydantic v2</b> models = the four plane schemas</li>
+        <li>Connector framework: ABC contract + registry</li>
+        <li>Repository with lazy per-plane loading + caching</li>
+        <li>Deterministic engines (pure functions over planes)</li>
+        <li>LLM agent via provider API (interpretation only)</li>
+      </ul>
+    </div>
+    <div>
+      <h4>FRONTEND</h4>
+      <ul>
+        <li><b>React + Vite + TypeScript + Tailwind</b></li>
+        <li>Dashboard, value-graph view, tokenomics panel</li>
+        <li>Allocation-policy control, optimization simulator</li>
+        <li>Agent chat panel</li>
+      </ul>
+      <h4>OPS</h4>
+      <ul>
+        <li>Config-driven (<code>costgraph.yaml</code>)</li>
+        <li>Docker Compose for one-command local run</li>
+        <li>Deploy: Render/Railway (API) + Netlify/Vercel (UI)</li>
+      </ul>
+    </div>
+  </div>
+  <h3>Design principle — deterministic core, AI on top</h3>
+  <p>All financial math is deterministic Python and unit-tested. The LLM never computes a number; it selects which engine to call and renders the result in prose. This makes outputs reproducible, auditable, and demo-stable.</p>
+  <h3>Non-functional requirements</h3>
+  <table>
+    <tr><th>Attribute</th><th>Target</th></tr>
+    <tr><td>Reproducibility</td><td>Identical inputs → identical financial outputs (no LLM in the math path)</td></tr>
+    <tr><td>Auditability</td><td>Every attributed edge carries method + evidence + confidence</td></tr>
+    <tr><td>Extensibility</td><td>New provider = one connector class; zero engine changes</td></tr>
+    <tr><td>Onboarding</td><td>Clone → configure → run on sample data in &lt; 5 minutes</td></tr>
+    <tr><td>Portability</td><td>No dependency on any single cloud; file connector works offline</td></tr>
+  </table>
+</div></section>
+
+<!-- 10 API -->
+<section id="api"><div class="wrap">
+  <h2><span class="n">10</span>API Surface</h2>
+  <pre><span class="c"># Read</span>
+GET  /health
+GET  /api/graph/{product}                 <span class="c"># value graph: nodes + attributed edges</span>
+GET  /api/economics/{product}             <span class="c"># cost per outcome (current policy)</span>
+GET  /api/economics/{product}/compare     <span class="c"># period-over-period RCA</span>
+GET  /api/tokenomics/{product}            <span class="c"># AI cost per successful outcome</span>
+GET  /api/explain/{resource_id}           <span class="c"># how one resource's share was attributed</span>
+
+<span class="c"># Write / simulate</span>
+POST /api/allocation-policy               <span class="c"># {policy} → recompute everything</span>
+POST /api/optimize                        <span class="c"># {target_unit_cost, min_ai_success} → plan</span>
+
+<span class="c"># Agent</span>
+POST /api/agent/query                     <span class="c"># {question} → NL answer backed by engines</span></pre>
+  <p>Example — the optimization request that is the platform's signature capability:</p>
+  <pre><span class="k">POST</span> /api/optimize
+{
+  <span class="s">"product"</span>: <span class="s">"app1"</span>,
+  <span class="s">"target_unit_cost"</span>: <span class="s">0.055</span>,
+  <span class="s">"constraints"</span>: { <span class="s">"min_ai_success_rate"</span>: <span class="s">0.95</span>, <span class="s">"protect_prod"</span>: <span class="k">true</span> }
+}
+<span class="c">// → ranked levers (model routing, cache, rightsizing) that hit the target
+//   WITHOUT dropping AI success below 95% or mutating prod without approval</span></pre>
+</div></section>
+
+<!-- 11 ADOPTION -->
+<section id="adopt"><div class="wrap">
+  <h2><span class="n">11</span>Adoption Model</h2>
+  <p>CostGraph is built to be cloned and used, not just demoed. Onboarding your own data is a config-and-connector task, never an engine change.</p>
+  <ol>
+    <li><b>Fastest path — file connector.</b> Export your billing, telemetry, business metrics, and AI usage to JSON/CSV in the documented shapes; point <code>costgraph.yaml</code> at them; run.</li>
+    <li><b>Live path — provider connector.</b> Implement a <code>fetch()</code> that queries your source (BigQuery billing export, Cloud Monitoring, an orders DB, OpenAI usage) and returns normalized records; register it; reference it in config.</li>
+    <li><b>Configure the business unit.</b> Set <code>unit_type</code> to whatever outcome matters — order, request, AI decision — and the whole platform reports in those terms.</li>
+  </ol>
+  <pre><span class="k">class</span> MyGcpCostConnector(CostConnector):
+    name = <span class="s">"gcp_billing"</span>
+    <span class="k">def</span> fetch(self) -> list[CostRecord]:
+        rows = query_bigquery_billing_export(self.project, self.month)
+        <span class="k">return</span> [self._normalize(r) <span class="k">for</span> r <span class="k">in</span> rows]   <span class="c"># map → CostRecord</span></pre>
+</div></section>
+
+<!-- 12 ROADMAP -->
+<section id="roadmap"><div class="wrap">
+  <h2><span class="n">12</span>Build Roadmap</h2>
+  <table>
+    <tr><th>Milestone</th><th>Scope</th><th>Status</th></tr>
+    <tr><td>M1 — Foundation</td><td>Schemas, connectors, registry, config, repository, seeded 4-plane dataset</td><td><span class="status done">complete</span></td></tr>
+    <tr><td>M2 — Engines</td><td>Attribution + value-graph discovery, unit economics, AI tokenomics</td><td><span class="status next">next</span></td></tr>
+    <tr><td>M3 — Intelligence</td><td>RCA, constrained optimization, guardrails, agent endpoint</td><td><span class="status next">planned</span></td></tr>
+    <tr><td>M4 — Presentation</td><td>React dashboard, value-graph view, simulator, agent chat</td><td><span class="status next">planned</span></td></tr>
+    <tr><td>M5 — Ship</td><td>Docker Compose, deploy, docs, demo video, submission</td><td><span class="status next">planned</span></td></tr>
+  </table>
+  <div class="callout"><b>Scope discipline:</b> one product, one business unit, seeded data, one working (file) connector with a documented interface for the rest. Real multi-cloud connectors, Kubernetes auto-discovery, SSO/RBAC, and streaming are deliberately deferred — the extension path is shipped, not every extension.</div>
+</div></section>
+
+<footer><div class="wrap">
+  CostGraph — Design &amp; Solution Specification v0.1 · Apache-2.0 · deterministic core, AI on top.
+</div></footer>
+
+</body>
+</html>

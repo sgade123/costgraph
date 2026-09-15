@@ -1,0 +1,19 @@
+[
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"gke-workload","resource_id":"gke-shared","resource_type":"k8s","cpu_seconds":620000,"memory_gb_seconds":410000,"request_count":70,"attributes":{"app":"app1","namespace":"app1","cpu_request_share":"62","cpu_actual_share":"41","memory_share":"55","pod_share":"70"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"gke-workload","resource_id":"gke-shared","resource_type":"k8s","cpu_seconds":380000,"memory_gb_seconds":340000,"request_count":30,"attributes":{"app":"app2","namespace":"app2","cpu_request_share":"38","cpu_actual_share":"59","memory_share":"45","pod_share":"30"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"pubsub","resource_id":"pubsub-shared","message_count":810000,"attributes":{"source_app":"app1","message_share":"81"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"pubsub","resource_id":"pubsub-shared","message_count":190000,"attributes":{"source_app":"app2","message_share":"19"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"dataflow","resource_id":"dataflow-app1","cpu_seconds":100000,"attributes":{"app":"app1","dedicated":"true"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"cloudsql","resource_id":"sql-app1","duration_ms":100,"attributes":{"app":"app1","dedicated":"true"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"firestore","resource_id":"firestore-app1","io_reads":100,"attributes":{"app":"app1","dedicated":"true"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"storage","resource_id":"storage-app1","storage_bytes":100,"attributes":{"app":"app1","dedicated":"true"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"monitoring","resource_id":"obs-shared","request_count":60,"attributes":{"app":"app1","log_share":"60"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"monitoring","resource_id":"obs-shared","request_count":40,"attributes":{"app":"app2","log_share":"40"}},
+
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"fraud-check","resource_id":"fraud-check-gke","cpu_seconds":340000,"request_count":257000,"trace_id":"t-app1","attributes":{"product":"app1","otel_baggage":"true","call_share":"34","cpu_request_share":"90","cpu_actual_share":"72","memory_share":"85","pod_share":"95"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"fraud-check","resource_id":"fraud-check-gke","cpu_seconds":660000,"request_count":499000,"attributes":{"product":"other","otel_baggage":"true","call_share":"66"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"fraud-check","resource_id":"fraud-check-logs","request_count":31,"attributes":{"product":"app1","log_share":"31"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"payments-gateway","resource_id":"payments-gke","cpu_seconds":210000,"request_count":214000,"trace_id":"t-app1","attributes":{"product":"app1","otel_baggage":"true","call_share":"28","cpu_request_share":"88","cpu_actual_share":"70","memory_share":"82","pod_share":"93"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"payments-gateway","resource_id":"payments-gke","cpu_seconds":540000,"request_count":550000,"attributes":{"product":"other","otel_baggage":"true","call_share":"72"}},
+  {"timestamp":"2026-08-01T00:00:00Z","service_name":"payments-gateway","resource_id":"payments-logs","request_count":26,"attributes":{"product":"app1","log_share":"26"}}
+]

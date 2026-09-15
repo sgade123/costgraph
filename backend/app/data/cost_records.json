@@ -1,0 +1,17 @@
+[
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "GKE", "sku": "compute", "resource_id": "gke-shared", "effective_cost": 8400, "region": "us-central1", "labels": {"cluster": "prod-cluster-1", "shared": "true"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Pub/Sub", "sku": "throughput", "resource_id": "pubsub-shared", "effective_cost": 1180, "region": "us-central1", "labels": {"topic": "order-events", "shared": "true"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Dataflow", "sku": "vcpu-hr", "resource_id": "dataflow-app1", "effective_cost": 1891, "region": "us-central1", "labels": {"job": "enrich-stream", "app": "app1", "env": "prod"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Cloud SQL", "sku": "instance", "resource_id": "sql-app1", "effective_cost": 2140, "region": "us-central1", "labels": {"db": "orders-db", "app": "app1", "env": "prod"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Firestore", "sku": "operations", "resource_id": "firestore-app1", "effective_cost": 690, "region": "us-central1", "labels": {"db": "order-state", "app": "app1"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Storage", "sku": "gb-month", "resource_id": "storage-app1", "effective_cost": 240, "region": "us-central1", "labels": {"bucket": "receipts-bucket", "app": "app1"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "app1-prod", "service": "Logging + Monitoring", "sku": "ingestion", "resource_id": "obs-shared", "effective_cost": 910, "region": "us-central1", "labels": {"stack": "logging-monitoring", "shared": "true"}},
+
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "shared-platform", "service": "GKE", "sku": "compute", "resource_id": "fraud-check-gke", "effective_cost": 6200, "region": "us-central1", "labels": {"app": "fraud-check", "env": "prod", "cross_project": "true"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "shared-platform", "service": "Monitoring", "sku": "ingestion", "resource_id": "fraud-check-logs", "effective_cost": 540, "region": "us-central1", "labels": {"app": "fraud-check", "cross_project": "true"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "shared-platform", "service": "GKE", "sku": "compute", "resource_id": "payments-gke", "effective_cost": 4800, "region": "us-central1", "labels": {"app": "payments-gateway", "env": "prod", "cross_project": "true"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "gcp", "account": "shared-platform", "service": "Monitoring", "sku": "ingestion", "resource_id": "payments-logs", "effective_cost": 360, "region": "us-central1", "labels": {"app": "payments-gateway", "cross_project": "true"}},
+
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "openai", "account": "app1-ai", "service": "OpenAI", "sku": "gpt-inference", "resource_id": "ai-fraud-agent", "effective_cost": 2850, "labels": {"agent": "fraud-triage-agent", "app": "app1"}},
+  {"timestamp": "2026-08-01T00:00:00Z", "provider": "openai", "account": "app1-ai", "service": "OpenAI", "sku": "gpt-inference", "resource_id": "ai-support-agent", "effective_cost": 1620, "labels": {"agent": "order-support-agent", "app": "app1"}}
+]
