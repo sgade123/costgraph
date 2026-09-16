@@ -4,6 +4,10 @@
 
 > Built for the AI Builders Hackathon. Point it at your billing and telemetry, define your business unit, and CostGraph maps how your product actually runs — then tells you what one business outcome costs, including its AI cost per successful outcome.
 
+▶️ **[Watch the demo (5 min)](https://youtu.be/j2KfdzFiRLo)**
+
+![CostGraph dashboard](docs/img/dashboard.png)
+
 CostGraph answers the question cloud bills dodge: **what does one business outcome actually cost?** — one completed order, one API request, one successful AI decision — across shared infrastructure, asynchronous messaging, ephemeral jobs, cross-project downstream services, and AI/LLM workloads.
 
 The story is **KNOW → EXPLAIN → OPTIMIZE**: know what one outcome costs, explain why it changed and how each cost was attributed, and simulate optimizations to hit a target unit cost without breaking service-level or AI-quality constraints.
